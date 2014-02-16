@@ -1,29 +1,30 @@
-define( "halfPage",
-	[
-	],
-	function( ){
+( function module( base ){
+	define( "half-page", 
+		[
+			"require",
+			"angular",
+			"underscore"
+		],
+		function construct( require, angular, _ ){
+			angular.moduel( "HalfPage", [ ] );
 
-	} );
+			requirejs.config( {
+				"paths": {
+					"halfPageDirective": "/half-page/directive/halfpage-directive.js"
+				}
+			} );
 
+			requirejs( [ 
+					"halfpageDirective" 
+				],
+				function construct( halfpageDirective ){
+					var HalfPage = function HalfPage( ){
 
-define( "halfPageModule",
-	[
-	],
-	function( ){
+					};
 
-	} );
+					base.HalfPage = HalfPage;
+				}  );
 
-define( "halfPageDirective",
-	[
-	],
-	function( ){
-
-	} );
-
-
-define( "halfPageController",
-	[
-	],
-	function( ){
-
-	} );
+			return HalfPage;
+		} );
+} )( base );
