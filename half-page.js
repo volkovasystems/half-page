@@ -3,10 +3,10 @@ try{ var base = window; }catch( error ){ base = exports; }
 	define( "half-page", 
 		[
 			"require",
-			"angular",
-			"underscore"
+			"underscore",
+			"angular"
 		],
-		function construct( require, angular, _ ){
+		function construct( require, _ ){
 			angular.module( "HalfPage", [ ] );
 
 			requirejs.config( {
