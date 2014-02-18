@@ -1,27 +1,27 @@
 define( "halfpageDirective",
 	[
 		"amplify",
-		"angular",
 		"arbiter",
 		"chance",
 		"jquery",
-		"require"
+		"requirejs",
+		"angular"
 	],
 	function construct( amplify,
-						angular,
 						Arbiter,
 						chance,
 						$,
-						requirejs )
+						requirejs,
+						angular )
 	{
 		requirejs.config( {
 			"paths": {
-				"halfpageTemplate": "/half-page/template/halfpage-template.js",
-				"halfpageController": "/half-page/controller/halfpage-controller.js"
+				"halfpageTemplate": staticBaseUrl + "/half-page/template/halfpage-template",
+				"halfpageController": staticBaseUrl + "/half-page/controller/halfpage-controller"
 			}
 		} );
 
-		require( [
+		requirejs( [
 				"halfpageTemplate",
 				"halfpageController"
 			],
