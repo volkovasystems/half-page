@@ -12,35 +12,31 @@ define( "halfpageDirective",
 	function construct( ){
 		requirejs.config( {
 			"paths": {
-				"halfpageHeaderDirective": staticBaseURL + "/half-page/directive/halfpage-header-directive",
-				"halfpageBodyDirective": staticBaseURL + "/half-page/directive/halfpage-body-directive",
-				"halfpageFooterDirective": staticBaseURL + "/half-page/directive/halfpage-footer-directive",
-				"halfpageTemplate": staticBaseURL + "/half-page/template/halfpage-template",
-				"halfpageController": staticBaseURL + "/half-page/controller/halfpage-controller"
+				"pageDirective": staticBaseURL + "/half-page/directive/page-directive",
+				"halfpageFooterTemplate": staticBaseURL + "/half-page/template/halfpage-footer-template",
+				"halfpageFooterController": staticBaseURL + "/half-page/controller/halfpage-footer-controller"
 			}
 		} );
 
 		requirejs( [
-				"halfpageHeaderDirective",
-				"halfpageBodyDirective",
-				"halfpageFooterDirective",
-				"halfpageTemplate",
-				"halfpageController"
+				"pageDirective",
+				"halfpageFooterTemplate",
+				"halfpageFooterController"				
 			],
-			function construct( halfpageTemplate, halfpageController ){
+			function construct( pageDirective, halfpageFooterTemplate, halfpageFooterController ){
 				bindDOMFactory( "HalfPage" );
 				safeApplyFactory( "HalfPage" );
 
 				angular.module( "HalfPage" )
-					.directive( "halfpage",
+					.directive( "halfpageFooter",
 						[
 							"bindDOM",
 							"safeApply",
 							function directive( bindDOM, safeApply ){
 								return {
 									"restrict": "A",
-									"controller": halfpageController,
-									"template": halfpageTemplate,
+									"controller": halfpageFooterController,
+									"template": halfpageFooterTemplate,
 									"scope": true,
 									"compile": function compile( element, attributes, transclude ){
 										return {
@@ -50,7 +46,7 @@ define( "halfpageDirective",
 											},
 											"post": function postLink( scope, element, attributes ){
 												bindDOM( scope, element, attributes );
-												component.attr( "halfpage", scope.GUID );
+												component.attr( "halfpage-footer", scope.GUID );
 											}
 										}
 									},

@@ -2,7 +2,7 @@ define( "halfpageTemplate",
 	[
 		"domo"
 	],
-	function construct( domo ){
+	function construct( ){
 		return DIV( {
 			"halfpage-header": "{{ GUID }}",
 		} ).outerHTML +

@@ -2,7 +2,7 @@ define( "halfpageController",
 	[
 		"angular"
 	],
-	function construct( angular ){
+	function construct( ){
 		angular.module( "HalfPage" )
 			.controller( "halfpageController",
 				[

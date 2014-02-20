@@ -2,16 +2,17 @@ try{ var base = window; }catch( error ){ base = exports; }
 ( function module( base ){
 	define( "half-page", 
 		[
-			"require",
+			"requirejs",
 			"underscore",
-			"angular"
+			"angular",
+			"jquery"
 		],
-		function construct( require, _ ){
+		function construct( ){
 			angular.module( "HalfPage", [ ] );
 
 			requirejs.config( {
 				"paths": {
-					"halfPageDirective": "/half-page/directive/halfpage-directive.js"
+					"halfpageDirective": staticBaseURL + "/half-page/directive/halfpage-directive"
 				}
 			} );
 
@@ -29,7 +30,5 @@ try{ var base = window; }catch( error ){ base = exports; }
 
 					base.HalfPage = HalfPage;
 				}  );
-
-			return HalfPage;
 		} );
 } )( base );
