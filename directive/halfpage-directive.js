@@ -6,12 +6,13 @@ define( "halfpageDirective",
 		"jquery",
 		"requirejs",
 		"angular",
-		"bindDOM",
-		"safeApply"
+		"bindDOMFactory",
+		"safeApplyFactory"
 	],
 	function construct( ){
 		requirejs.config( {
 			"paths": {
+				"halfpageStyle": staticBaseURL + "/half-page/style/halfpage-style",
 				"halfpageHeaderDirective": staticBaseURL + "/half-page/directive/halfpage-header-directive",
 				"halfpageBodyDirective": staticBaseURL + "/half-page/directive/halfpage-body-directive",
 				"halfpageFooterDirective": staticBaseURL + "/half-page/directive/halfpage-footer-directive",
@@ -19,8 +20,8 @@ define( "halfpageDirective",
 				"halfpageController": staticBaseURL + "/half-page/controller/halfpage-controller"
 			}
 		} );
-
 		requirejs( [
+				"halfpageStyle",
 				"halfpageHeaderDirective",
 				"halfpageBodyDirective",
 				"halfpageFooterDirective",
@@ -30,7 +31,6 @@ define( "halfpageDirective",
 			function construct( halfpageTemplate, halfpageController ){
 				bindDOMFactory( "HalfPage" );
 				safeApplyFactory( "HalfPage" );
-
 				angular.module( "HalfPage" )
 					.directive( "halfpage",
 						[
@@ -53,9 +53,6 @@ define( "halfpageDirective",
 												component.attr( "halfpage", scope.GUID );
 											}
 										}
-									},
-									"link": function link( scope, element, attributes ){
-
 									}
 								}
 							}

@@ -6,8 +6,8 @@ define( "halfpageDirective",
 		"jquery",
 		"requirejs",
 		"angular",
-		"bindDOM",
-		"safeApply"
+		"bindDOMFactory",
+		"safeApplyFactory"
 	],
 	function construct( ){
 		requirejs.config( {
