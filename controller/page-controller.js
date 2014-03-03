@@ -1,14 +1,14 @@
-define( "halfpageController",
+define( "pageController",
 	[
 		"angular",
 		"appDetermine"
 	],
 	function construct( ){
 		appDetermine( "HalfPage" )
-			.controller( "halfpageController",
+			.controller( "pageController",
 				[
-					function controller( ){
-
+					function construct( ){
+						
 					}
 				] );
 	} );

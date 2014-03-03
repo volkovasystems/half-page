@@ -1,34 +1,34 @@
-define( "halfpageDirective",
+define( "halfpageHeaderDirective",
 	[
 		"amplify",
 		"arbiter",
 		"chance",
 		"jquery",
 		"requirejs",
-		"angular",
-		"bindDOMFactory",
-		"safeApplyFactory"
+		"angular"
 	],
 	function construct( ){
 		requirejs.config( {
 			"paths": {
 				"pageDirective": staticBaseURL + "/half-page/directive/page-directive",
-				"halfpageStyle": staticBaseURL + "/half-page/style/halfpage-style",
+				"halfpageHeaderStyle": staticBaseURL + "/half-page/style/halfpage-header-style",
 				"halfpageHeaderTemplate": staticBaseURL + "/half-page/template/halfpage-header-template",
 				"halfpageHeaderController": staticBaseURL + "/half-page/controller/halfpage-header-controller"
 			}
 		} );
 
 		requirejs( [
-				"pageDirective",
+				"halfpageHeaderStyle",
 				"halfpageHeaderTemplate",
-				"halfpageHeaderController"				
+				"halfpageHeaderController",
+				"pageDirective",
+				"appDetermine"
 			],
-			function construct( pageDirective, halfpageHeaderTemplate, halfpageHeaderController ){
-				bindDOMFactory( "HalfPage" );
-				safeApplyFactory( "HalfPage" );
-
-				angular.module( "HalfPage" )
+			function construct( halfpageHeaderStyle,
+								halfpageHeaderTemplate, 
+								halfpageHeaderController )
+			{
+				appDetermine( "HalfPage" )
 					.directive( "halfpageHeader",
 						[
 							"bindDOM",
@@ -38,24 +38,37 @@ define( "halfpageDirective",
 									"restrict": "A",
 									"controller": halfpageHeaderController,
 									"template": halfpageHeaderTemplate,
-									"scope": true,
-									"compile": function compile( element, attributes, transclude ){
-										return {
-											"pre": function preLink( scope, element, attributes ){
-												safeApply( scope );
-												scope.GUID = chance.guid( );
-											},
-											"post": function postLink( scope, element, attributes ){
-												bindDOM( scope, element, attributes );
-												component.attr( "halfpage-header", scope.GUID );
-											}
-										}
+									"priority": 1,
+									"scope": {
+										"appName": "@",
+										"name": "@"
 									},
-									"link": function link( scope, element, attributes ){
-
+									"link": function link( scope, element, attribute ){
+										safeApply( scope );
+										bindDOM( scope, element, attribute );
+										
+										scope.GUID = attribute.halfpageHeader;
+										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
+										scope.container = scope.name;
+										scope.safeApply( );
+										
+										scope.element.attr( "namespace", scope.namespace );
+										halfpageHeaderStyle( scope.GUID );
+										Arbiter.subscribe( "on-resize:" + scope.namespace,
+											function handler( ){
+												scope.element.css( {
+													"position": "absolute !important",
+													"top": "0px !important",
+													"left": "0px !important",
+													"z-index": "2 !important",
+													"height": "50px !important",
+													"width": window.innerWidth + "px"
+												} );
+											} );
 									}
 								}
 							}
 						] );
+				Arbiter.publish( "module-loaded:halfpage-header-directive", null, { "persist": true } );
 			} );
 	} );

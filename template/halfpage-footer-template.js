@@ -1,9 +1,13 @@
 define( "halfpageFooterTemplate",
 	[
-		"domo"
+		"domo",
+		"domoStringify"
 	],
 	function construct( ){
-		return DIV( {
+		return domoStringify( DIV( {
 			"page": "{{ GUID }}",
-		} ).outerHTML;
+			"app-name": "{{ appName }}",
+			"name": "footer-page",
+			"auto-resize": ""
+		} ) );
 	} );

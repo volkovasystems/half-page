@@ -1,33 +1,34 @@
-define( "halfpageDirective",
+define( "halfpageFooterDirective",
 	[
 		"amplify",
 		"arbiter",
 		"chance",
 		"jquery",
 		"requirejs",
-		"angular",
-		"bindDOMFactory",
-		"safeApplyFactory"
+		"angular"
 	],
 	function construct( ){
 		requirejs.config( {
 			"paths": {
 				"pageDirective": staticBaseURL + "/half-page/directive/page-directive",
+				"halfpageFooterStyle": staticBaseURL + "/half-page/style/halfpage-footer-style",
 				"halfpageFooterTemplate": staticBaseURL + "/half-page/template/halfpage-footer-template",
 				"halfpageFooterController": staticBaseURL + "/half-page/controller/halfpage-footer-controller"
 			}
 		} );
 
 		requirejs( [
-				"pageDirective",
+				"halfpageFooterStyle",
 				"halfpageFooterTemplate",
-				"halfpageFooterController"				
+				"halfpageFooterController",
+				"pageDirective",
+				"appDetermine"
 			],
-			function construct( pageDirective, halfpageFooterTemplate, halfpageFooterController ){
-				bindDOMFactory( "HalfPage" );
-				safeApplyFactory( "HalfPage" );
-
-				angular.module( "HalfPage" )
+			function construct( halfpageFooterStyle, 
+								halfpageFooterTemplate, 
+								halfpageFooterController )
+			{
+				appDetermine( "HalfPage" )
 					.directive( "halfpageFooter",
 						[
 							"bindDOM",
@@ -37,24 +38,37 @@ define( "halfpageDirective",
 									"restrict": "A",
 									"controller": halfpageFooterController,
 									"template": halfpageFooterTemplate,
-									"scope": true,
-									"compile": function compile( element, attributes, transclude ){
-										return {
-											"pre": function preLink( scope, element, attributes ){
-												safeApply( scope );
-												scope.GUID = chance.guid( );
-											},
-											"post": function postLink( scope, element, attributes ){
-												bindDOM( scope, element, attributes );
-												component.attr( "halfpage-footer", scope.GUID );
-											}
-										}
+									"priority": 1,
+									"scope": {
+										"appName": "@",
+										"name": "@"
 									},
-									"link": function link( scope, element, attributes ){
+									"link": function link( scope, element, attribute ){
+										safeApply( scope );
+										bindDOM( scope, element, attribute );
 
+										scope.GUID = attribute.halfpageFooter;
+										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
+										scope.container = scope.name;
+										scope.safeApply( );
+
+										scope.element.attr( "namespace", scope.namespace );
+										halfpageFooterStyle( scope.GUID );
+										Arbiter.subscribe( "on-resize:" + scope.namespace,
+											function handler( ){
+												scope.element.css( {
+													"position": "absolute !important",
+													"bottom": "0px !important",
+													"left": "0px !important",
+													"z-index": "2 !important",
+													"height": "60px !important",
+													"width": window.innerWidth + "px"
+												} );
+											} );
 									}
 								}
 							}
 						] );
+				Arbiter.publish( "module-loaded:halfpage-footer-directive", null, { "persist": true } );
 			} );
 	} );

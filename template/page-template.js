@@ -1,15 +1,24 @@
 define( "pageTemplate",
 	[
-		"domo"
+		"domo",
+		"domoStringify"
 	],
 	function construct( ){
-		return DIV( {
-			"header-control": "{{ GUID }}",
-		} ).outerHTML + 
-		DIV( {
-			"page-content": "{{ GUID }}",
-		} ).outerHTML + 
-		DIV( {
-			"footer-control": "{{ GUID }}",
-		} ).outerHTML;
+		return domoStringify( [
+				DIV( {
+					"header-control": "{{ GUID }}",
+					"container": "{{ container }}",
+					"auto-resize": ""
+				} ),
+				DIV( {
+					"page-content": "{{ GUID }}",
+					"container": "{{ container }}",
+					"auto-resize": ""
+				} ),
+				DIV( {
+					"footer-control": "{{ GUID }}",
+					"container": "{{ container }}",
+					"auto-resize": ""
+				} )
+			] );
 	} );

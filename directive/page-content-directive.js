@@ -1,4 +1,4 @@
-define( "footerControlDirective",
+define( "pageContentDirective",
 	[
 		"amplify",
 		"arbiter",
@@ -10,28 +10,27 @@ define( "footerControlDirective",
 	function construct( ){
 		requirejs.config( {
 			"paths": {
-				"footerControlStyle": staticBaseURL + "/half-page/style/footer-control-style",
-				"footerControlController": staticBaseURL + "/half-page/controller/footer-control-controller"
+				"pageContentStyle": staticBaseURL + "/half-page/style/page-content-style",
+				"pageContentController": staticBaseURL + "/half-page/controller/page-content-controller"
 			}
 		} );
-
 		requirejs( [
-				"footerControlStyle",
-				"footerControlController",
+				"pageContentStyle",
+				"pageContentController",
 				"appDetermine"
 			],
-			function construct( footerControlStyle, 
-								footerControlController )
+			function construct( pageContentStyle, 
+								pageContentController )
 			{
 				appDetermine( "HalfPage" )
-					.directive( "footerControl",
+					.directive( "pageContent",
 						[
 							"bindDOM",
 							"safeApply",
 							function directive( bindDOM, safeApply ){
 								return {
 									"restrict": "A",
-									"controller": footerControlController,
+									"controller": pageContentController,
 									"priority": 1,
 									"scope": {
 										"appName": "@",
@@ -43,7 +42,7 @@ define( "footerControlDirective",
 											"pre": function preLink( scope, element, attribute ){
 												safeApply( scope );
 												scope.GUID = attribute.page;
-												footerControlStyle( scope.GUID );
+												pageContentStyle( scope.GUID );
 												scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
 												scope.safeApply( );
 											},
@@ -69,6 +68,6 @@ define( "footerControlDirective",
 								}
 							}
 						] );
-				Arbiter.publish( "module-loaded:footer-control-directive", null, { "persist": true } );
+				Arbiter.publish( "module-loaded:page-content-directive", null, { "persist": true } );
 			} );
 	} );

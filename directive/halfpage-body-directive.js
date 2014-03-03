@@ -1,33 +1,33 @@
-define( "halfpageDirective",
+define( "halfpageBodyDirective",
 	[
 		"amplify",
 		"arbiter",
 		"chance",
 		"jquery",
 		"requirejs",
-		"angular",
-		"bindDOMFactory",
-		"safeApplyFactory"
+		"angular"
 	],
 	function construct( ){
 		requirejs.config( {
 			"paths": {
 				"pageDirective": staticBaseURL + "/half-page/directive/page-directive",
+				"halfpageBodyStyle": staticBaseURL + "/half-page/style/halfpage-body-style",
 				"halfpageBodyTemplate": staticBaseURL + "/half-page/template/halfpage-body-template",
 				"halfpageBodyController": staticBaseURL + "/half-page/controller/halfpage-body-controller"
 			}
 		} );
-
 		requirejs( [
-				"pageDirective",
+				"halfpageBodyStyle",
 				"halfpageBodyTemplate",
-				"halfpageBodyController"				
+				"halfpageBodyController",
+				"pageDirective",
+				"appDetermine"
 			],
-			function construct( pageDirective, halfpageBodyTemplate, halfpageBodyController ){
-				bindDOMFactory( "HalfPage" );
-				safeApplyFactory( "HalfPage" );
-
-				angular.module( "HalfPage" )
+			function construct( halfpageBodyStyle,
+								halfpageBodyTemplate,
+								halfpageBodyController )
+			{
+				appDetermine( "HalfPage" )
 					.directive( "halfpageBody",
 						[
 							"bindDOM",
@@ -37,24 +37,37 @@ define( "halfpageDirective",
 									"restrict": "A",
 									"controller": halfpageBodyController,
 									"template": halfpageBodyTemplate,
-									"scope": true,
-									"compile": function compile( element, attributes, transclude ){
-										return {
-											"pre": function preLink( scope, element, attributes ){
-												safeApply( scope );
-												scope.GUID = chance.guid( );
-											},
-											"post": function postLink( scope, element, attributes ){
-												bindDOM( scope, element, attributes );
-												component.attr( "halfpage-body", scope.GUID );
-											}
-										}
+									"priority": 1,
+									"scope": {
+										"appName": "@",
+										"name": "@" 
 									},
-									"link": function link( scope, element, attributes ){
+									"link": function link( scope, element, attribute ){
+										safeApply( scope );
+										bindDOM( scope, element, attribute );
+										
+										scope.GUID = attribute.halfpageBody;
+										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
+										scope.container = scope.name;
+										scope.safeApply( );
 
+										scope.element.attr( "namespace", scope.namespace );
+										halfpageBodyStyle( scope.GUID );
+										Arbiter.subscribe( "on-resize:" + scope.namespace,
+											function handler( ){
+												scope.element.css( {
+													"position": "absolute !important",
+													"top": "50px !important",
+													"left": "0px !important",
+													"z-index": "2 !important",
+													"height": Math.abs( window.innerHeight - 110 ) + "px",
+													"width": window.innerWidth + "px"
+												} );
+											} );
 									}
 								}
 							}
 						] );
+				Arbiter.publish( "module-loaded:halfpage-body-directive", null, { "persist": true } );
 			} );
 	} );
