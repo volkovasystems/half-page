@@ -3,6 +3,7 @@ try{ var base = window; }catch( error ){ base = exports; }
 	define( "halfpage", 
 		[
 			"async",
+			"amplify",
 			"requirejs",
 			"underscore",
 			"angular",
@@ -11,18 +12,20 @@ try{ var base = window; }catch( error ){ base = exports; }
 		function construct( async ){
 			requirejs.config( {
 				"paths": {
+					"halfpageComponentTemplate": staticBaseURL + "/half-page/template/halfpage-component-template",
 					"halfpageDirective": staticBaseURL + "/half-page/directive/halfpage-directive"
 				}
 			} );
 			requirejs( [ 
+					"halfpageComponentTemplate",
 					"halfpageDirective",
 					"bindDOMFactory",
 					"safeApplyFactory",
 					"autoResizeDirective",
 					"appDetermine"
 				],
-				function construct( ){
-					var halfPageApp = angular.module( "HalfPage", [ ] );
+				function construct( halfpageComponentTemplate ){
+					var halfpageApp = angular.module( "HalfPage", [ ] );
 					var appNamespace = appDetermine( "HalfPage" ).name;
 					
 					safeApplyFactory( appNamespace );
@@ -39,17 +42,62 @@ try{ var base = window; }catch( error ){ base = exports; }
 						//TODO: This will remove all elements outside the halfpage component.
 					};
 
-					HalfPage.prototype.attachComponent = function attachComponent( componentID ){
-						var componentObject = $( "#" + componentID );
+					HalfPage.prototype.attachKeyListeners = function attachKeyListeners( ){
+						if( this.keyListenersInitialized ){
+							return;
+						}
+						this.keyListenersInitialized = true;
+
+						var referenceID = this.scope.namespace + "[" + this.scope.GUID + "]";
+						this.scope.referenceID = referenceID;
+						$( window ).keypress( function onKeyPress( event ){
+							console.log( "window:keypress" );
+							amplify.publish( "on-keypress:" + referenceID, event );
+						} );
+
+						$( window ).keydown( function onKeyDown( event ){
+							amplify.publish( "on-keydown:" + referenceID, event );
+						} );
+
+						$( window ).keyup( function onKeyUp( event ){
+							amplify.publish( "on-keyup:" + referenceID, event );
+						} );
+					};
+
+					HalfPage.prototype.attachComponent = function attachComponent( component ){
+						var componentObject;
+						if( typeof component == "string" ){
+							componentObject = $( "#" + component );	
+						}else if( component instanceof $ ){
+							componentObject = component;
+						}else{
+							throw new Error( "invalid component" );
+						}
+
 						var componentElement = componentObject[ 0 ];
 						if( !componentElement ){
 							throw new Error( "failed to attach halfpage component" );
 						}
-						if( appNamespace == "HalfPage" ){	
-							appDetermine.bootstrap( componentObject, appNamespace );
-						}else{
-							componentObject.attr( "ng-bound-app", appNamespace );
+
+						if( componentObject.hasClass( "halfpage-attached" ) ){
+							return;
 						}
+
+						this.halfpageContainer = componentObject;
+						halfpageComponent = $( halfpageComponentTemplate );
+						halfpageComponent.attr( "app-name", appNamespace );
+						componentObject.append( halfpageComponent );
+
+						var self = this;
+						halfpageComponent.ready( function onReady( ){
+							if( appNamespace == "HalfPage" ){	
+								appDetermine.bootstrap( componentObject, appNamespace );
+							}
+							componentObject.attr( "ng-bound-app", appNamespace );
+							componentObject.addClass( "halfpage-attached" );
+							halfpageComponent.data( "halfpage-object", self );
+						} );
+
 						this.cleanContainer( );
 					};
 
@@ -80,7 +128,7 @@ try{ var base = window; }catch( error ){ base = exports; }
 						},
 						
 						//TODO: Page should be as a separate componenet not part of the halfpage.
-						function handler( callback ){
+						/*function handler( callback ){
 							Arbiter.subscribe( "module-loaded:page-directive", callback );
 						},
 						function handler( callback ){
@@ -91,7 +139,7 @@ try{ var base = window; }catch( error ){ base = exports; }
 						},
 						function handler( callback ){
 							Arbiter.subscribe( "module-loaded:header-control-directive", callback );
-						}
+						}*/
 					], handler );
 			} );
 		} );

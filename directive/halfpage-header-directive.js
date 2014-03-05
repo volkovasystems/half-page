@@ -10,22 +10,18 @@ define( "halfpageHeaderDirective",
 	function construct( ){
 		requirejs.config( {
 			"paths": {
-				"pageDirective": staticBaseURL + "/half-page/directive/page-directive",
 				"halfpageHeaderStyle": staticBaseURL + "/half-page/style/halfpage-header-style",
-				"halfpageHeaderTemplate": staticBaseURL + "/half-page/template/halfpage-header-template",
 				"halfpageHeaderController": staticBaseURL + "/half-page/controller/halfpage-header-controller"
 			}
 		} );
 
 		requirejs( [
 				"halfpageHeaderStyle",
-				"halfpageHeaderTemplate",
 				"halfpageHeaderController",
-				"pageDirective",
-				"appDetermine"
+				"appDetermine",
+				"onRender"
 			],
 			function construct( halfpageHeaderStyle,
-								halfpageHeaderTemplate, 
 								halfpageHeaderController )
 			{
 				appDetermine( "HalfPage" )
@@ -33,11 +29,11 @@ define( "halfpageHeaderDirective",
 						[
 							"bindDOM",
 							"safeApply",
-							function directive( bindDOM, safeApply ){
+							"$timeout",
+							function directive( bindDOM, safeApply, $timeout ){
 								return {
 									"restrict": "A",
-									"controller": halfpageHeaderController,
-									"template": halfpageHeaderTemplate,
+									"controller": "halfpageHeaderController",
 									"priority": 1,
 									"scope": {
 										"appName": "@",
@@ -47,23 +43,26 @@ define( "halfpageHeaderDirective",
 										safeApply( scope );
 										bindDOM( scope, element, attribute );
 										
-										scope.GUID = attribute.halfpageHeader;
-										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
-										scope.container = scope.name;
-										scope.safeApply( );
-										
-										scope.element.attr( "namespace", scope.namespace );
-										halfpageHeaderStyle( scope.GUID );
-										Arbiter.subscribe( "on-resize:" + scope.namespace,
+										onRender( $timeout, element,
 											function handler( ){
-												scope.element.css( {
-													"position": "absolute !important",
-													"top": "0px !important",
-													"left": "0px !important",
-													"z-index": "2 !important",
-													"height": "50px !important",
-													"width": window.innerWidth + "px"
-												} );
+												scope.GUID = attribute.halfpageHeader;
+												scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
+												scope.container = scope.name;
+												scope.safeApply( );
+												
+												scope.element.attr( "namespace", scope.namespace );
+												halfpageHeaderStyle( scope.GUID );
+												Arbiter.subscribe( "on-resize:" + scope.namespace,
+													function handler( ){
+														scope.element.css( {
+															"position": "absolute !important",
+															"top": "0px !important",
+															"left": "0px !important",
+															"z-index": "2 !important",
+															"height": "50px !important",
+															"width": window.innerWidth + "px"
+														} );
+													} );
 											} );
 									}
 								}

@@ -40,7 +40,7 @@ define( "halfpageDirective",
 							function construct( bindDOM, safeApply ){
 								return {
 									"restrict": "A",
-									"controller": halfpageController,
+									"controller": "halfpageController",
 									"template": halfpageTemplate,
 									"priority": 1,
 									"scope": {
@@ -51,13 +51,13 @@ define( "halfpageDirective",
 										safeApply( scope );
 										bindDOM( scope, element, attribute );
 										
-										scope.GUID = chance.guid( );
-										halfpageStyle( scope.GUID );
+										scope.GUID = chance.guid( ).toLowerCase( );
 										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
 										scope.safeApply( );
 										
 										scope.element.attr( "half-page", scope.GUID );
 										scope.element.attr( "namespace", scope.namespace );
+										halfpageStyle( scope.GUID );
 										Arbiter.subscribe( "on-resize:" + scope.namespace,
 											function handler( ){
 												scope.element.css( {
@@ -67,8 +67,16 @@ define( "halfpageDirective",
 													"z-index": "0 !important",
 													"width": window.innerWidth + "px",
 													"height": window.innerHeight + "px"
-												} )
+												} );
 											} );
+
+										//This will bind the halfpage object to the halfpage directive.
+										var halfpageObject = scope.element.data( "halfpage-object" );
+										scope.halfpageObject = halfpageObject;
+										halfpageObject.scope = scope;
+										scope.safeApply( );
+
+										halfpageObject.attachKeyListeners( );
 									}
 								}
 							}
