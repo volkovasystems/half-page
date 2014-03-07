@@ -125,21 +125,7 @@ try{ var base = window; }catch( error ){ base = exports; }
 						},
 						function handler( callback ){
 							Arbiter.subscribe( "module-loaded:halfpage-footer-directive", callback );
-						},
-						
-						//TODO: Page should be as a separate componenet not part of the halfpage.
-						/*function handler( callback ){
-							Arbiter.subscribe( "module-loaded:page-directive", callback );
-						},
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:page-content-directive", callback );
-						},
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:footer-control-directive", callback );
-						},
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:header-control-directive", callback );
-						}*/
+						}
 					], handler );
 			} );
 		} );
