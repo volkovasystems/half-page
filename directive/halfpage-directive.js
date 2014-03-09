@@ -51,10 +51,15 @@ define( "halfpageDirective",
 										safeApply( scope );
 										bindDOM( scope, element, attribute );
 										
-										scope.GUID = chance.guid( ).toLowerCase( );
+										//This will bind the halfpage object to the halfpage directive.
+										var halfpageObject = scope.element.data( "halfpage-object" );
+										scope.halfpageObject = halfpageObject;
+										halfpageObject.scope = scope;
+
+										scope.GUID = halfpageObject.GUID || chance.guid( ).toLowerCase( );
 										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
 										scope.safeApply( );
-										
+
 										scope.element.attr( "half-page", scope.GUID );
 										scope.element.attr( "namespace", scope.namespace );
 										halfpageStyle( scope.GUID );
@@ -69,12 +74,6 @@ define( "halfpageDirective",
 													"height": window.innerHeight + "px"
 												} );
 											} );
-
-										//This will bind the halfpage object to the halfpage directive.
-										var halfpageObject = scope.element.data( "halfpage-object" );
-										scope.halfpageObject = halfpageObject;
-										halfpageObject.scope = scope;
-										scope.safeApply( );
 
 										halfpageObject.attachKeyListeners( );
 									}
