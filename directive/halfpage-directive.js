@@ -56,6 +56,34 @@ define( "halfpageDirective",
 										scope.halfpageObject = halfpageObject;
 										halfpageObject.scope = scope;
 
+										/*
+											We use the halfpage object as a unique
+												DOM ID for every element.
+
+											Note on IDs:
+
+												GUID is used to refer both the object and the DOM
+													include anything that is under the hierarchy
+													and scope of the DOM.
+
+													In case of halfpage, the GUID is attached to
+													the main DOM followed by its header, body and footer.
+
+												DOMID is the namespace used by the object but may refer
+													to the DOM specifically.
+
+													This may be used to refer specifically to the DOM when
+													using the object to manipulate it.
+
+												The namespace of the DOM refers to the category of what
+													kind of DOM it is and what application it belongs.
+	
+													This can be used to manipulate the entire
+													category of DOM.
+										*/
+										scope.DOMID = halfpageObject.namespace;
+										scope.element.attr( "domid", scope.DOMID );
+
 										scope.GUID = halfpageObject.GUID || chance.guid( ).toLowerCase( );
 										scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
 										scope.safeApply( );
@@ -63,7 +91,9 @@ define( "halfpageDirective",
 										scope.element.attr( "half-page", scope.GUID );
 										scope.element.attr( "namespace", scope.namespace );
 										halfpageStyle( scope.GUID );
+
 										Arbiter.subscribe( "on-resize:" + scope.namespace,
+											"on-resize:" + scope.DOMID, 
 											function handler( ){
 												scope.element.css( {
 													"position": "absolute !important",
