@@ -8,10 +8,10 @@ try{ var base = window; }catch( error ){ base = exports; }
 			"requirejs",
 			"underscore",
 			"angular",
-			"jquery"
+			"jquery",
+			"moduleLoadNotifier"
 		],
 		function construct( async ){
-			var moduleLoadHandler = Arbiter.create( );
 			requirejs.config( {
 				"paths": {
 					"page": staticBaseURL + "/page/page",
@@ -34,14 +34,6 @@ try{ var base = window; }catch( error ){ base = exports; }
 									pageGroupModule, 
 									halfpageComponentTemplate )
 				{
-					pageModule( function onModuleLoad( ){
-						moduleLoadHandler.publish( "module-loaded:page", null, { "persist": true } );
-					} );
-
-					pageGroupModule( onModuleLoad( ){
-						moduleLoadHandler.publish( "module-loaded:page-group", null, { "persist": true } );
-					} );
-
 					var halfpageApp = angular.module( "HalfPage", [ ] );
 					var appNamespace = appDetermine( "HalfPage" ).name;
 					
@@ -417,27 +409,11 @@ try{ var base = window; }catch( error ){ base = exports; }
 					base.HalfPage = HalfPage;
 				}  );
 			
-			return ( function onModuleLoad( handler ){
-				async.parallel( [
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:halfpage-directive", callback );
-						},
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:halfpage-header-directive", callback );	
-						},
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:halfpage-body-directive", callback );
-						},
-						function handler( callback ){
-							Arbiter.subscribe( "module-loaded:halfpage-footer-directive", callback );
-						},
-						function handler( callback ){
-							moduleLoadHandler.subscribe( "module-loaded:page", callback );
-						},
-						function handler( callback ){
-							moduleLoadHandler.subscribe( "module-loaded:page-group", callback );
-						}
-					], handler );
-			} );
+			return moduleLoadNotifier( "halfpage-directive",
+				"halfpage-header-directive",
+				"halfpage-body-directive",
+				"halfpage-footer-directive",
+				pageModule,
+				pageGroupModule );
 		} );
 } )( base );

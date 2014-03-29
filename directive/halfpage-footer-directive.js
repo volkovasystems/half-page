@@ -5,7 +5,8 @@ define( "halfpageFooterDirective",
 		"chance",
 		"jquery",
 		"requirejs",
-		"angular"
+		"angular",
+		"moduleLoadNotifier"
 	],
 	function construct( ){
 		requirejs.config( {
@@ -29,8 +30,7 @@ define( "halfpageFooterDirective",
 						[
 							"bindDOM",
 							"safeApply",
-							"$timeout",
-							function directive( bindDOM, safeApply, $timeout ){
+							function directive( bindDOM, safeApply ){
 								return {
 									"restrict": "A",
 									"controller": "halfpageFooterController",
@@ -43,7 +43,7 @@ define( "halfpageFooterDirective",
 										safeApply( scope );
 										bindDOM( scope, element, attribute );
 
-										onRender( $timeout, element,
+										onRender( element,
 											function handler( ){
 												scope.GUID = attribute.halfpageFooter;
 												scope.namespace = scope.name + "-" + scope.appName.toLowerCase( );
@@ -68,6 +68,7 @@ define( "halfpageFooterDirective",
 								}
 							}
 						] );
-				Arbiter.publish( "module-loaded:halfpage-footer-directive", null, { "persist": true } );
+
+				moduleLoadNotifier( "halfpage-footer-directive" ).notifyModuleLoaded( );
 			} );
 	} );

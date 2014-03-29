@@ -6,7 +6,8 @@ define( "halfpageDirective",
 		"chance",
 		"jquery",
 		"requirejs",
-		"angular"
+		"angular",
+		"moduleLoadNotifier"
 	],
 	function construct( ){
 		requirejs.config( {
@@ -110,6 +111,7 @@ define( "halfpageDirective",
 								}
 							}
 						] );
-				Arbiter.publish( "module-loaded:halfpage-directive", null, { "persist": true } );
+
+				moduleLoadNotifier( "halfpage-directive" ).notifyModuleLoaded( );
 			} );
 	} );
