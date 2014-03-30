@@ -63,13 +63,13 @@ try{ var base = window; }catch( error ){ base = exports; }
 
 					};
 
-					HalfPage.prototype.overrideGUID = function overrideGUID( GUID ){
-						/*
-							Note that the GUID should be the same for the object
-								and the component.
+					/*
+						Note that the GUID should be the same for the object
+							and the component.
 
-							This method should be called before attaching to the component.
-						*/
+						This method should be called before attaching to the component.
+					*/
+					HalfPage.prototype.overrideGUID = function overrideGUID( GUID ){
 						this.GUID = GUID;
 					};
 
@@ -311,6 +311,10 @@ try{ var base = window; }catch( error ){ base = exports; }
 						this.pageList[ footerPage.namespace ] = footerPage;
 					};
 
+					/*
+						Returns true if the halfpage container is already appended
+							with the halfpage component.
+					*/
 					HalfPage.prototype.checkIfAttached = function checkIfAttached( ){
 						return ( "halfpageContainer" in this )
 							&& this.halfpageContainer.hasClass( "halfpage-attached" );
@@ -324,14 +328,26 @@ try{ var base = window; }catch( error ){ base = exports; }
 
 					};
 
+					/*
+						Returns the direct descendant DOM element 
+							for the halfpage's header.
+					*/
 					HalfPage.prototype.getHeaderComponent = function getHeaderComponent( ){
 						return this.halfpageComponent.find( "> halfpage-header" );
 					};
 
+					/*
+						Returns the direct descendant DOM element 
+							for the halfpage's footer.
+					*/
 					HalfPage.prototype.getFooterComponent = function getFooterComponent( ){
 						return this.halfpageComponent.find( "> halfpage-footer" );
 					};
 
+					/*
+						Returns the direct descendant DOM element 
+							for the halfpage's body.
+					*/
 					HalfPage.prototype.getBodyComponent = function getBodyComponent( ){
 						return this.halfpageComponent.find( "> halfpage-body" );
 					};
@@ -404,6 +420,30 @@ try{ var base = window; }catch( error ){ base = exports; }
 					HalfPage.prototype.getWidth = function getWidth( ){
 						var parentElement = this.scope.element.parent( );
 						return parentElement.width( );
+					};
+
+					/*
+						This will return the halfpage header object.
+					*/
+					HalfPage.prototype.getHalfPageHeader = function getHalfPageHeader( ){
+						return scope.element.find( "div[halfpage-header='" + this.GUID + "']" )
+							.data( "halfpage-header-object" );
+					};
+
+					/*
+						This will return the halfpage footer object.
+					*/
+					HalfPage.prototype.getHalfPageFooter = function getHalfPageFooter( ){
+						return scope.element.find( "div[halfpage-footer='" + this.GUID + "']" )
+							.data( "halfpage-footer-object" );
+					};
+
+					/*
+						This will return the halfpage body object.
+					*/
+					HalfPage.prototype.getHalfPageBody = function getHalfPageBody( ){
+						return scope.element.find( "div[halfpage-body='" + this.GUID + "']" )
+							.data( "halfpage-body-object" );
 					};
 
 					base.HalfPage = HalfPage;

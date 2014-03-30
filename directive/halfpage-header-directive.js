@@ -25,6 +25,60 @@ define( "halfpageHeaderDirective",
 			function construct( halfpageHeaderStyle,
 								halfpageHeaderController )
 			{
+				/*
+					This is not exposed in the outside world because this is intended to
+						be accessible via an interface.
+
+					This class is designed like this so that the halfpage is the only
+						object that can manipulate the halfpage body container.
+				*/
+				var HalfPageHeader = function HalfPageHeader( scope ){
+					this.scope = scope;
+					this.reconstructDOMID( );
+				};
+
+				HalfPageHeader.prototype.reconstructDOMID = function reconstructDOMID( ){
+					var parent = this.scope.element.parent( );
+					var parentDOMID = parent.attr( "domid" );
+					this.DOMID = parentDOMID + "-halfpage-header";
+					this.scope.element.attr( "domid", this.DOMID );
+					this.scope.DOMID = this.DOMID;
+				};
+
+				HalfPageHeader.prototype.getDOMID = function getDOMID( ){
+					return this.DOMID;
+				}
+
+				HalfPageHeader.prototype.getX  = function getX( ){
+					return 0;
+				};
+
+				HalfPageHeader.prototype.getY = function getY( ){
+					return 0;
+				};
+
+				HalfPageHeader.prototype.getHeight = function getHeight( ){
+					return 50;
+				};
+
+				HalfPageHeader.prototype.getWidth = function getWidth( ){
+					return scope.element.parent( ).width( );
+				};
+
+				HalfPageHeader.prototype.getZIndex = function getZIndex( ){
+					var parentElement = this.scope.element.parent( );
+					var zIndex = parentElement.css( "z-index" );
+					if( zIndex === "auto" ){
+						return 1;
+					}else if( typeof zIndex == "string" ){
+						zIndex = parseInt( zIndex );
+					}
+					if( isNaN( zIndex ) ){
+						throw new Error( "invalid z-index value" );
+					}
+					return zIndex + 1;
+				};
+
 				appDetermine( "HalfPage" )
 					.directive( "halfpageHeader",
 						[
@@ -42,6 +96,10 @@ define( "halfpageHeaderDirective",
 									"link": function link( scope, element, attribute ){
 										safeApply( scope );
 										bindDOM( scope, element, attribute );
+
+										var halfpageHeaderObject = new HalfPageHeader( scope );
+										scope.element.data( "halfpage-header-object", halfpageHeaderObject );
+										scope.halfpageHeaderObject = halfpageHeaderObject;
 										
 										onRender( element,
 											function handler( ){
@@ -52,15 +110,17 @@ define( "halfpageHeaderDirective",
 												
 												scope.element.attr( "namespace", scope.namespace );
 												halfpageHeaderStyle( scope.GUID );
+
 												Arbiter.subscribe( "on-resize:" + scope.namespace,
+													"on-resize:" + scope.DOMID, 
 													function handler( ){
 														scope.element.css( {
 															"position": "absolute !important",
-															"top": "0px !important",
-															"left": "0px !important",
-															"z-index": "2 !important",
-															"height": "50px !important",
-															"width": window.innerWidth + "px"
+															"top": scope.halfpageHeaderObject.getY( ),
+															"left": scope.halfpageHeaderObject.getX( ),
+															"z-index": scope.halfpageHeaderObject.getZIndex( ),
+															"height": scope.halfpageHeaderObject.getHeight( ),
+															"width": scope.halfpageHeaderObject.getWidth( )
 														} );
 													} );
 											} );

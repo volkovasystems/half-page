@@ -25,6 +25,60 @@ define( "halfpageFooterDirective",
 			function construct( halfpageFooterStyle, 
 								halfpageFooterController )
 			{
+				/*
+					This is not exposed in the outside world because this is intended to
+						be accessible via an interface.
+
+					This class is designed like this so that the halfpage is the only
+						object that can manipulate the halfpage body container.
+				*/
+				var HalfPageFooter = function HalfPageFooter( scope ){
+					this.scope = scope;
+					this.reconstructDOMID( );
+				};
+
+				HalfPageFooter.prototype.reconstructDOMID = function reconstructDOMID( ){
+					var parent = this.scope.element.parent( );
+					var parentDOMID = parent.attr( "domid" );
+					this.DOMID = parentDOMID + "-halfpage-footer";
+					this.scope.element.attr( "domid", this.DOMID );
+					this.scope.DOMID = this.DOMID;
+				};
+
+				HalfPageFooter.prototype.getDOMID = function getDOMID( ){
+					return this.DOMID;
+				}
+
+				HalfPageFooter.prototype.getX  = function getX( ){
+					return 0;
+				};
+
+				HalfPageFooter.prototype.getY = function getY( ){
+					return 0;
+				};
+
+				HalfPageFooter.prototype.getHeight = function getHeight( ){
+					return 60;
+				};
+
+				HalfPageFooter.prototype.getWidth = function getWidth( ){
+					return scope.element.parent( ).width( );
+				};
+
+				HalfPageFooter.prototype.getZIndex = function getZIndex( ){
+					var parentElement = this.scope.element.parent( );
+					var zIndex = parentElement.css( "z-index" );
+					if( zIndex === "auto" ){
+						return 1;
+					}else if( typeof zIndex == "string" ){
+						zIndex = parseInt( zIndex );
+					}
+					if( isNaN( zIndex ) ){
+						throw new Error( "invalid z-index value" );
+					}
+					return zIndex + 1;
+				};
+
 				appDetermine( "HalfPage" )
 					.directive( "halfpageFooter",
 						[
@@ -43,6 +97,10 @@ define( "halfpageFooterDirective",
 										safeApply( scope );
 										bindDOM( scope, element, attribute );
 
+										var halfpageFooterObject = new HalfPageFooter( scope );
+										scope.element.data( "halfpage-footer-object", halfpageFooterObject );
+										scope.halfpageFooterObject = halfpageFooterObject;
+
 										onRender( element,
 											function handler( ){
 												scope.GUID = attribute.halfpageFooter;
@@ -52,15 +110,17 @@ define( "halfpageFooterDirective",
 
 												scope.element.attr( "namespace", scope.namespace );
 												halfpageFooterStyle( scope.GUID );
+												
 												Arbiter.subscribe( "on-resize:" + scope.namespace,
+													"on-resize:" + scope.DOMID, 
 													function handler( ){
 														scope.element.css( {
 															"position": "absolute !important",
-															"bottom": "0px !important",
-															"left": "0px !important",
-															"z-index": "2 !important",
-															"height": "60px !important",
-															"width": window.innerWidth + "px"
+															"bottom": scope.halfpageFooterObject.getY( ),
+															"left": scope.halfpageFooterObject.getX( ),
+															"z-index": scope.halfpageFooterObject.getZIndex( ),
+															"height": scope.halfpageFooterObject.getHeight( ),
+															"width": scope.halfpageFooterObject.getWidth( )
 														} );
 													} );
 											} );
