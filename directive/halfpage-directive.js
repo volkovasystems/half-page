@@ -58,13 +58,13 @@ define( "halfpageDirective",
 										halfpageObject.scope = scope;
 
 										/*
-											We use the halfpage object as a unique
+											We use the halfpage object namespace as a unique
 												DOM ID for every element.
 
 											Note on IDs:
 
 												GUID is used to refer both the object and the DOM
-													include anything that is under the hierarchy
+													which include anything that is under the hierarchy
 													and scope of the DOM.
 
 													In case of halfpage, the GUID is attached to
@@ -80,7 +80,9 @@ define( "halfpageDirective",
 													kind of DOM it is and what application it belongs.
 	
 													This can be used to manipulate the entire
-													category of DOM.
+													category of DOM under the app.
+
+												The name of the DOM refers to the category of the DOM only.
 										*/
 										scope.DOMID = halfpageObject.namespace;
 										scope.element.attr( "domid", scope.DOMID );

@@ -111,6 +111,7 @@ define( "halfpageBodyDirective",
 
 												scope.element.attr( "namespace", scope.namespace );
 												halfpageBodyStyle( scope.GUID );
+												
 												Arbiter.subscribe( "on-resize:" + scope.namespace,
 													"on-resize:" + scope.DOMID,
 													function handler( ){
